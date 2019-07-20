@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Twitter Crawler</title>
+    <style type="text/css">
+        #footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="js/crawler_call.js"></script>
+</head>
+
+<body>
+<div>
+    <font color="blue" size="9"><p class="text-center">Crawler control panel</p></font>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div align="center">
+                    <button type="button" class="btn btn-success" id ="start">Start</button>
+                    <button type="button" class="btn btn-danger" id="stop">Stop</button>
+                    <p align="center" id="status"></p>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="col-sm-12" align="center"><a href="http://acmos.net/" target="_blank"><img src="images/Logo_acmos.jpg" alt="Logo_acmos" style="max-height: 6rem;"></a>
+        <a href="http://www.lavoro.gov.it/Pagine/default.aspx" target="_blank"><img src="images/Logo_ministero.jpg" alt="Logo_ministero" style="max-height: 6rem;"></a>
+        <a href="http://hatespeech.di.unito.it/" target="_blank"><img src="images/Logo_unito.png" alt="Logo_unito" style="max-height: 6rem;"></a>
+        <a href="http://www.di.uniba.it/~swap/index.php?n=Main.HomePage" target="_blank"><img src="images/Logo_univbari.png" alt="Logo_univbari" style="max-height: 6rem;"></a>
+        <a href="http://benvenutiinitalia.it/" target="_blank"><img src="images/Logo_bit.png" alt="Logo_bit" style="max-height: 6rem;"></a>
+        <a href="http://www.voxdiritti.it/" target="_blank"><img src="images/Logo_vox.png" alt="Logo_vox" style="max-height: 6rem;"></a>
+        <a href="https://www.saamanagement.it/saa-innovazione/labnet/" target="_blank"><img src="images/Logo_labnet.jfif" alt="Logo_labnet" style="max-height: 6rem;"></a></div>
+</div>
+</body>
+</html>
