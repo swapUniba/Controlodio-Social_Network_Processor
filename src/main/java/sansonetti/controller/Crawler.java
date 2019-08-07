@@ -291,8 +291,18 @@ public class Crawler {
                 }
                 String quello_che_invio = "{\"tweets\":"+ payload.toString() + " }";
                 System.out.println(quello_che_invio);
-                json_string = sendPostRequest("http://90.147.170.25:5000/api/hatespeech", "{\"tweets\":"+ payload.toString() + " }");
-            } else {
+                try {
+                    json_string = sendPostRequest("http://90.147.170.25:5000/api/hatespeech", "{\"tweets\":" + payload.toString() + " }");
+                }catch(RuntimeException e){
+                    System.out.println("IL SERVIZIO DI SENTIMENT HanSEL NON E' RAGGIUNGIBILE, SI STA UTILIZZANDO SENTIPOLC");
+                    SENTIMENT_ANALYSIS_ALGORITHM = "sentipolc";
+                    this.JSON_CHILD_INDEX = "results";
+                    this.JSON_SCORE_INDEX = "polarity";
+                    this.JSON_SCORE_NEG_VALUE = "neg";
+                    scoreRequest(message);
+                    return;
+                }
+                } else {
                 System.out.println("Algoritmo di sentiment configurato non riconosciuto");
                 System.exit(0);
             }
