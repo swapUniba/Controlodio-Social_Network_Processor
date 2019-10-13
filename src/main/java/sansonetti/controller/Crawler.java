@@ -63,6 +63,8 @@ public class Crawler {
     //Contains the sentiment analysis algorithm used for processing the content of tweet
     private String SENTIMENT_ANALYSIS_ALGORITHM;
 
+    private final int MAX_CONNECTIONS_ALLOWED_IN_DB = 5000000;
+
     private File file = new File("risultati_mappa_nuovo2");
 
     private FileWriter outputWriter;
@@ -82,7 +84,8 @@ public class Crawler {
     private int max_days_profile;
 
     public void start() {
-        List<Profile> list = profileCollection.findBySourceAndConnections("twitter", false);
+        searchTwitterUser("TizianaVerdini");
+        /*List<Profile> list = profileCollection.findBySourceAndConnections("twitter", false);
         for (int i = 0; i < list.size(); ) {
             System.out.flush();
             if (Crawler.RUNNING_STATE) {
@@ -90,7 +93,7 @@ public class Crawler {
                 searchTwitterUser(profile.getScreenName());
                 i++;
             }
-        }
+        }*/
     }
 
     //Endpoint that provides the crawler execution status
@@ -131,7 +134,7 @@ public class Crawler {
             profile.setSource("twitter");
             profile.setCategorie(categorie);
             profile.setConnections(connections);
-            profile.setLast_update(LocalDate.now());
+            profile.setAggiornatoIl(LocalDate.now());
             //Verifico se il profilo è già presente per poter prendere se così, i valori della categorie vecchie
             Profile temp = profileCollection.findByScreenNameAndSource(profile.getScreenName(), "twitter");
             if (temp != null) {
@@ -147,34 +150,45 @@ public class Crawler {
     }
     //Extracts and stores the connections of a profile
     private void insertTwitterConnections(String screenName, List<Long> following, List<Long> follower) {
-        Set<Long> following_connection_already_inserted = new HashSet<>();
-        connectionCollection.findByUsernameAndType(screenName, "following").iterator().forEachRemaining(e -> following_connection_already_inserted.add(e.getContactID()));
-        Set<Long> follower_connection_already_inserted = new HashSet<>();
-        connectionCollection.findByUsernameAndType(screenName, "follower").iterator().forEachRemaining(e -> follower_connection_already_inserted.add(e.getContactID()));
-        List<Connection> connectionList = new ArrayList<>();
-        for (Long id : following) {
-            if (!following_connection_already_inserted.contains(id)) {
-                Connection connection = new Connection();
-                connection.setUsername(screenName);
-                connection.setSource("twitter");
-                connection.setType("following");
-                connection.setContactID(id);
-                connectionList.add(connection);
+        int total_connection_in_db = connectionCollection.countAllByContactIDNotNull();
+        if (total_connection_in_db > MAX_CONNECTIONS_ALLOWED_IN_DB) {
+            int total_connections_deleted = 0;
+            Profile oldest_profile = profileCollection.findFirstByOrderByAggiornatoIlAsc();
+            int deleted = connectionCollection.deleteByUsername(oldest_profile.getScreenName());
+            total_connections_deleted = total_connections_deleted + deleted;
+            while(total_connections_deleted<500000){
+                oldest_profile = profileCollection.findFirstByOrderByAggiornatoIlAsc();
+                deleted = connectionCollection.deleteByUsername(oldest_profile.getScreenName());
+                total_connections_deleted = total_connections_deleted + deleted;
             }
         }
-        for (Long id : follower) {
-            if (!follower_connection_already_inserted.contains(id)) {
-                Connection connection = new Connection();
-                connection.setUsername(screenName);
-                connection.setSource("twitter");
-                connection.setType("follower");
-                connection.setContactID(id);
-                connectionList.add(connection);
+            Set<Long> following_connection_already_inserted = new HashSet<>();
+            connectionCollection.findByUsernameAndType(screenName, "following").iterator().forEachRemaining(e -> following_connection_already_inserted.add(e.getContactID()));
+            Set<Long> follower_connection_already_inserted = new HashSet<>();
+            connectionCollection.findByUsernameAndType(screenName, "follower").iterator().forEachRemaining(e -> follower_connection_already_inserted.add(e.getContactID()));
+            List<Connection> connectionList = new ArrayList<>();
+            for (Long id : following) {
+                if (!following_connection_already_inserted.contains(id)) {
+                    Connection connection = new Connection();
+                    connection.setUsername(screenName);
+                    connection.setSource("twitter");
+                    connection.setType("following");
+                    connection.setContactID(id);
+                    connectionList.add(connection);
+                }
             }
-        }
-        connectionCollection.insert(connectionList);
+            for (Long id : follower) {
+                if (!follower_connection_already_inserted.contains(id)) {
+                    Connection connection = new Connection();
+                    connection.setUsername(screenName);
+                    connection.setSource("twitter");
+                    connection.setType("follower");
+                    connection.setContactID(id);
+                    connectionList.add(connection);
+                }
+            }
+            connectionCollection.insert(connectionList);
     }
-
     // Recalls sentiment analysis services for extracted tweets
     private void insertTweet(String screenName, List<Status> statuses, User user, boolean connections) {
         Set<Long> message_already_inserted = new HashSet<>();
@@ -494,6 +508,7 @@ public class Crawler {
         connectionCollection.deleteByContactIDAndContactUsernameAndUsernameAndType(id, contact_screenName, searchedUserScreenName, type);
         connectionCollection.insert(connection);
         Profile following_profile = profileCollection.findByScreenNameAndSource(contact_screenName, "twitter");
+        checkApiLimit();
         User following_user = twitter.showUser(contact_screenName);
         if (following_profile == null) {
             if (following_user.getStatus() != null) {
@@ -501,7 +516,7 @@ public class Crawler {
                 doStats();
             }
         } else {
-            if (Period.between(LocalDate.now(), following_profile.getLast_update()).getDays() > max_days_profile) {
+            if (Period.between(LocalDate.now(), following_profile.getAggiornatoIl()).getDays() > max_days_profile) {
                 performFollowerFollowingExtraction(contact_screenName, following_user);
                 doStats();
             }
