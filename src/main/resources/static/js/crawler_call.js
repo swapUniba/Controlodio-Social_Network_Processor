@@ -3,7 +3,7 @@ $(document).ready(function () {
             type: "GET",
             crossDomain: true,
             crossOrigin: true,
-            url: "http://localhost:8082/getState",
+            url: "http://193.204.187.192:8087/getState",
             success: function (msg){
                 console.log(JSON.stringify(msg));
                 if(!(msg === '')) {
@@ -38,7 +38,7 @@ $(document).ready(function () {
             type: "POST",
             crossDomain: true,
             crossOrigin: true,
-            url: "http://localhost:8082/setState",
+            url: "http://193.204.187.192:8087/setState",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(twitterRequestBody),
             success: function (msg) {
@@ -67,7 +67,7 @@ $(document).ready(function () {
             type: "POST",
             crossDomain: true,
             crossOrigin: true,
-            url: "http://localhost:8082/setState",
+            url: "http://193.204.187.192/setState",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(twitterRequestBody),
             success: function (msg) {
