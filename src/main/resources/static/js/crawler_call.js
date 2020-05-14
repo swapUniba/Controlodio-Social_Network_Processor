@@ -67,7 +67,7 @@ $(document).ready(function () {
             type: "POST",
             crossDomain: true,
             crossOrigin: true,
-            url: "http://193.204.187.192/setState",
+            url: "http://193.204.187.192:8087/setState",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(twitterRequestBody),
             success: function (msg) {

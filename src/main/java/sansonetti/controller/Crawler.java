@@ -86,16 +86,28 @@ public class Crawler {
     private int max_days_profile;
 
     public void start() {
-        searchTwitterUser("TizianaVerdini");
-        /*List<Profile> list = profileCollection.findBySourceAndConnections("twitter", false);
-        for (int i = 0; i < list.size(); ) {
-            System.out.flush();
-            if (Crawler.RUNNING_STATE) {
-                Profile profile = list.get(i);
-                searchTwitterUser(profile.getScreenName());
-                i++;
+        //searchTwitterUser("Twitter");
+
+        List<Profile> list = profileCollection.findBySourceAndConnections("twitter", false);
+        while(true) {
+            while (list == null) {
+                try {
+                    Thread.sleep(300000);
+                } catch (InterruptedException e) {
+                }
+                list = profileCollection.findBySourceAndConnections("twitter", false);
             }
-        }*/
+
+            for (int i = 0; i < list.size(); ) {
+                System.out.flush();
+                if (Crawler.RUNNING_STATE) {
+                    Profile profile = list.get(i);
+                    searchTwitterUser(profile.getScreenName());
+                    i++;
+                }
+            }
+            list = null;
+        }
     }
 
     //Endpoint that provides the crawler execution status
